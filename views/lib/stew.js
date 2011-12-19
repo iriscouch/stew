@@ -12,7 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+exports.reduce = easy_reduce
 exports.reducer = define_easy_reducer
+
+function easy_reduce(keys, vals, rereduce) {
+  if(!Array.isArray(keys))
+    throw new Error('First parameter must be the CouchDB "keys" array')
+  if(!Array.isArray(vals))
+    throw new Error('Second parameter must be the CouchDB "vals" array')
+  if(typeof rereduce !== 'boolean')
+    throw new Error('Third parameter must be the CouchDB "rereduce" boolean flag')
+
+  var keys = Array.prototype.slice.call(arguments, 3)
+  if(keys.length < 1)
+    throw new Error('Must provide at least one key name to accumulate')
+
+  keys.forEach(function(key, i) {
+    if(typeof key !== 'string')
+      throw new Error('Argument ' + (3+1+i) + ' is not a string: ' + JSON.stringify(key))
+  })
+}
 
 function define_easy_reducer() {
   // Return a CouchDB reduce function which accumulates all the desired keys in
