@@ -1,27 +1,37 @@
-// Easy Reduce tests
+// Stew tests
 //
 
-var easy = require('../views/lib/easy-reduce')
 
-function test() {
-  var assert = require('assert')
+var tap = require('tap')
+  , test = tap.test
+  , util = require('util')
 
-  var keys = ['row1', 'row2', 'row3']
-    , vals = [ { 'name':'Bob', 'people':2, 'pencils':1  }
+var stew = require('../views/lib/stew')
+
+test('Defining reducers', function(t) {
+  var vals = [ { 'name':'Bob', 'people':2, 'pencils':1  }
              , { 'name':'Joe', 'people':5               }
              , { 'name':'Ann', 'people':3, 'pencils':15 }
              ]
 
-  var reduce = easy.reducer('people', 'pencils')
-    , result = reduce(keys, vals, false)
+  var reducer = stew.reducer('people', 'pencils')
+    , result = reducer(keys(vals), vals, false)
 
-  assert.equal(result.count  , 3 , 'Three rows emitted')
-  assert.equal(result.people , 10, 'Ten total people')
-  assert.equal(result.pencils, 16, "Sixteen pencils, Joe's missing value counts as 0")
-  assert.equal(result.name, undefined, 'No .name value since it was not in the definition')
+  t.equal(result.count  , 3 , 'Three rows emitted')
+  t.equal(result.people , 10, 'Ten total people')
+  t.equal(result.pencils, 16, "Sixteen pencils, Joe's missing value counts as 0")
+  t.equal(Object.keys(result).length, 3, 'Only keys for people, pencils, and count')
 
-  console.log('ok')
+  t.end()
+})
+
+//
+// Utils
+//
+
+// Make up some keys for some values
+function keys(vals) {
+  var result = []
+  vals.forEach(function(val, i) { result.push('key_' + (i+1)) })
+  return result
 }
-
-if(require.main === module)
-  test()
