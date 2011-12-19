@@ -31,6 +31,9 @@ function easy_reduce(keys, vals, rereduce) {
     if(typeof key !== 'string')
       throw new Error('Argument ' + (3+1+i) + ' is not a string: ' + JSON.stringify(key))
   })
+
+  var reducer = define_easy_reducer(keys)
+  return reducer(keys, vals, rereduce)
 }
 
 function define_easy_reducer() {

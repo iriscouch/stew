@@ -58,6 +58,24 @@ test('Reducer input validation', function(t) {
   t.end()
 })
 
+test('Reducer function', function(t) {
+  var vals = [ { 'pins': 1 }
+             , { 'pins': 2 }
+             , { 'pins': 3 }
+             , { 'pins': 4 }
+             ]
+    , keys = ks(vals)
+
+  var result = stew.reduce(keys, vals, false,
+                           'pins')
+
+  t.equal(Object.keys(result).length, 2, 'Two keys in the final reduction')
+  t.equal(result.count, 4, 'Reducer counted all four values')
+  t.equal(result.pins, 10, 'Reducer accumulated all pins')
+
+  t.end()
+})
+
 //
 // Utils
 //
