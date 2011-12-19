@@ -1,6 +1,6 @@
 { "name"   : "stew"
 , "version": "0.1.0"
-, "description": "Easy CouchDB reduce functions"
+, "description": "Relaxed CouchDB reduce functions"
 , "dependencies": { "modules": null
                   }
 , "modules": [ "views/lib" ]
