@@ -36,11 +36,12 @@ function easy_reduce(keys, vals, rereduce) {
   return reducer(keys, vals, rereduce)
 }
 
-function define_easy_reducer() {
+function define_easy_reducer(key_names) {
   // Return a CouchDB reduce function which accumulates all the desired keys in
   // an object. The exception is a "count" key which is the count of total objects.
 
-  var key_names = Array.prototype.slice.apply(arguments)
+  if(!Array.isArray(key_names))
+    key_names = Array.prototype.slice.apply(arguments)
 
   // Always have a "count" key to count the total rows emitted.
   if(!~ key_names.indexOf('count'))

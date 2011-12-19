@@ -59,22 +59,34 @@ test('Reducer input validation', function(t) {
 })
 
 test('Reducer function', function(t) {
-  var vals = [ { 'pins': 1 }
+  var result
+    , vals = [ { 'pins': 1 }
              , { 'pins': 2 }
-             , { 'pins': 3 }
+             , { 'pins': 3, 'jason':23 }
              , { 'pins': 4 }
              ]
     , keys = ks(vals)
 
-  var result = stew.reduce(keys, vals, false,
-                           'pins')
+  result = stew.reduce(keys, vals, false, 'pins')
 
   t.equal(Object.keys(result).length, 2, 'Two keys in the final reduction')
   t.equal(result.count, 4, 'Reducer counted all four values')
   t.equal(result.pins, 10, 'Reducer accumulated all pins')
 
+  result = null
+  t.doesNotThrow(function() {
+    result = stew.reduce(keys, vals, false, 'pins', 'jason', 'smith')
+  }, 'Reducer is okay with missing values')
+
+  t.ok('jason' in result, 'Reducer accumulated semi-missing key "jason"')
+  t.ok('smith' in result, 'Reducer accumulated missing key "smith"')
+
+  t.equal(result.jason, 23, 'Reducer accumulated semi-missing value "jason"')
+  t.equal(result.smith,  0, 'Reducer accumulated missing key "smith"')
+
   t.end()
 })
+
 
 //
 // Utils
