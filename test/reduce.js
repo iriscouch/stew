@@ -87,6 +87,61 @@ test('Reducer function', function(t) {
   t.end()
 })
 
+test('Adding values to reductions', function(t) {
+  var KB = 1024
+    , MB = KB * 1024
+    , GB = MB * 1024
+    , vals = [ { 'text':1*KB, 'docs':1*MB, 'all':1*GB }
+             , { 'text':2*KB, 'docs':2*MB, 'all':3*GB }
+             , { 'text':3*KB, 'docs':3*MB, 'all':2*GB }
+             ]
+
+  function to_kb(val) { return val / KB }
+  function to_mb(val) { return val / MB }
+  function to_gb(val) { return val / GB }
+
+  var reducer
+  t.doesNotThrow(make_reducer, 'No problem adding .convert options')
+  function make_reducer() {
+    reducer = stew.reducer('text', 'docs', 'all')
+                  .convert('text', 'text_kb', to_kb)
+                  .convert('text', 'text_mb', to_mb)
+                  .convert('text', 'text_gb', to_gb)
+                  .convert('docs', 'docs_kb', to_kb)
+                  .convert('docs', 'docs_mb', to_mb)
+                  .convert('docs', 'docs_gb', to_gb)
+                  .convert('all' , 'all_kb' , to_kb)
+                  .convert('all' , 'all_mb' , to_mb)
+                  .convert('all' , 'all_gb' , to_gb)
+  }
+
+  t.ok(reducer, 'Built a converting reducing function')
+
+  var result = reducer(ks(vals), vals, false)
+  t.ok(result, 'Got a result from reducer with conversion function')
+
+  // The count, plus the three original keys, plus three converters for each of them
+  t.equal(Object.keys(result).length, 1 + 3 + (3 * 3), 'Result has all values and all converted values')
+  t.equal(result.count, 3, 'Converters do not impact the count')
+
+  t.equal(result.text, 6*KB, 'Correct sum for text')
+  t.equal(result.docs, 6*MB, 'Correct sum for docs')
+  t.equal(result.all , 6*GB, 'Correct sum for all')
+
+  t.equal(result.text_kb, 6*KB / 1024, 'Correct converted sum for text_kb')
+  t.equal(result.docs_kb, 6*MB / 1024, 'Correct converted sum for docs_kb')
+  t.equal(result.all_kb , 6*GB / 1024, 'Correct converted sum for docs_kb')
+
+  t.equal(result.text_mb, 6*KB / (1024*1024), 'Correct converted sum for text_mb')
+  t.equal(result.docs_mb, 6*MB / (1024*1024), 'Correct converted sum for docs_mb')
+  t.equal(result.all_mb , 6*GB / (1024*1024), 'Correct converted sum for docs_mb')
+
+  t.equal(result.text_gb, 6*KB / (1024*1024*1024), 'Correct converted sum for text_gb')
+  t.equal(result.docs_gb, 6*MB / (1024*1024*1024), 'Correct converted sum for docs_gb')
+  t.equal(result.all_gb , 6*GB / (1024*1024*1024), 'Correct converted sum for docs_gb')
+
+  t.end()
+})
 
 //
 // Utils

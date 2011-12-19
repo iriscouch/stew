@@ -47,7 +47,12 @@ function define_easy_reducer(key_names) {
   if(!~ key_names.indexOf('count'))
     key_names.push('count')
 
-  return reducer
+  var conversions = []
+
+  var reducer_func = reducer
+  reducer_func.convert = add_conversion
+  return reducer_func
+
   function reducer(keys, vals, rereduce) {
     var result = {}
 
@@ -66,13 +71,28 @@ function define_easy_reducer(key_names) {
       })
     })
 
-    return new Reduction(result)
+    conversions.forEach(function(conversion) {
+      var key     = conversion[0]
+        , new_key = conversion[1]
+        , func    = conversion[2]
+        , value   = result[key]
+
+      result[new_key] = func.call(result, value)
+    })
+
+    return result
   }
-}
 
-function Reduction (obj) {
-  var self = this
+  function add_conversion(key, new_key, func) {
+    if(!~ key_names.indexOf(key))
+      throw new Error('Cannot convert unspecified key: ' + key)
+    if(~ key_names.indexOf(new_key))
+      throw new Error('Cannot convert to existing key: ' + new_key)
+    if(typeof func !== 'function')
+      throw new Error('Third parameter must be conversion function')
 
-  for (var key in obj)
-    self[key] = obj[key]
+    conversions.push([key, new_key, func])
+
+    return reducer_func
+  }
 }
