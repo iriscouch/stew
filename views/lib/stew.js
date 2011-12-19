@@ -66,6 +66,13 @@ function define_easy_reducer(key_names) {
       })
     })
 
-    return result
+    return new Reduction(result)
   }
+}
+
+function Reduction (obj) {
+  var self = this
+
+  for (var key in obj)
+    self[key] = obj[key]
 }
