@@ -49,26 +49,23 @@ function define_easy_reducer(key_names) {
 
   return reducer
   function reducer(keys, vals, rereduce) {
-    var initial_values = {}
-    key_names.forEach(function(key) {
-      initial_values[key] = 0
+    var result = {}
+
+    vals.forEach(function(value) {
+      key_names.forEach(function(key) {
+        var current_value = result[key] || 0
+          , sub_value     = value[key]  || 0
+
+        // Everything always accumulates, with the exception that "count"
+        // increments the first time around (before re-reducing).
+        if(!rereduce && key === 'count')
+          result[key] = current_value + 1
+
+        else
+          result[key] = current_value + sub_value
+      })
     })
 
-    return vals.reduce(accumulator, initial_values)
-    function accumulator(state, value) {
-      var result = {} // Stores state + value
-      key_names.forEach(function(key) {
-        if(rereduce)
-          result[key] = state[key] + (value[key] || 0) // rereduce always accumultates
-
-        else if(key != 'count')
-          result[key] = state[key] + (value[key] || 0) // Most values just accumulate too
-
-        else if(key == 'count')
-          result[key] = state[key] + 1               // Count is a counter
-      })
-
-      return result
-    }
+    return result
   }
 }
