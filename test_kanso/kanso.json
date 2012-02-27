@@ -1,0 +1,8 @@
+{ "name"   : "stew_test"
+, "version": "0.1.0"
+, "description": "Test Stew in a deployment"
+, "dependencies": { "modules": null
+                  }
+, "modules": [ "views/fruits" ]
+, "modules_attachment": false
+}
