@@ -1,8 +1,11 @@
 { "name"   : "stew_test"
 , "version": "0.1.0"
 , "description": "Test Stew in a deployment"
-, "dependencies": { "modules": null
+, "dependencies": { "stew": null
+                  , "modules": null
+                  , "properties": null
                   }
-, "modules": [ "views/fruits" ]
+, "modules": ["lib"]
+, "load": "lib/app"
 , "modules_attachment": false
 }
